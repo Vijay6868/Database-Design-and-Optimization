@@ -1,0 +1,376 @@
+-- Script to create the tables for the Looking Glass Recruitment
+
+-- Create the database tables
+
+-- Create the Employer table
+
+CREATE TABLE Employer
+(EmployerID     NUMBER(5)     CONSTRAINT Employer_EmployerID_PK     PRIMARY KEY,
+ EmployerName   VARCHAR2(30)  CONSTRAINT Employer_EmployerName_NN   NOT NULL,
+ StreetAddress  VARCHAR2(40)  CONSTRAINT Employer_StreetAddress_NN  NOT NULL,
+ Suburb         VARCHAR2(20)  CONSTRAINT Employer_Suburb_NN         NOT NULL,
+ EmailAddress   VARCHAR2(30)  CONSTRAINT Employer_EmailAddress_NN   NOT NULL,
+ PhoneNumber    VARCHAR2(12)  CONSTRAINT Employer_PhoneNumber_NN    NOT NULL
+);
+
+-- Create the Candidate table
+
+CREATE TABLE Candidate
+(CandidateID   NUMBER(5)      CONSTRAINT Candidate_CandidateID_PK   PRIMARY KEY,
+ LastName      VARCHAR2(20)   CONSTRAINT Candidate_LastName_NN      NOT NULL,
+ FirstName     VARCHAR2(20)   CONSTRAINT Candidate_FirstName_NN     NOT NULL,
+ StreetAddress VARCHAR2(30)   CONSTRAINT Candidate_StreetAddress_NN NOT NULL,
+ Suburb        VARCHAR2(20)   CONSTRAINT Candidate_Suburb_NN        NOT NULL,
+ PhoneNumber   VARCHAR2(12)   CONSTRAINT candidate_PhoneNumber_NN   NOT NULL,
+ Status        VARCHAR2(10)    CONSTRAINT Candidate_Status_CC        CHECK 
+                                         ((Status = 'Employed') OR
+                                          (Status = 'Unemployed'))
+                              CONSTRAINT Candidate_Status_NN        NOT NULL 
+);
+
+
+--- Create the certification table
+
+CREATE TABLE Certification
+(CandidateID  NUMBER(5)      CONSTRAINT Certification_CandID_PK       PRIMARY KEY
+                             CONSTRAINT Certification_CandID_FK  
+                             REFERENCES Candidate(CandidateID),
+ CertificationDate  DATE     CONSTRAINT Certification_Date_NN         NOT NULL,
+ Notes         VARCHAR2(40)  CONSTRAINT Certification_Notes_NN        NOT NULL
+);
+
+-- Create the category table
+
+CREATE TABLE Category
+(CategoryID   NUMBER(3)        CONSTRAINT Category_ID_PK         PRIMARY KEY,
+ CategoryName VARCHAR2(30)     CONSTRAINT Category_Name_NN       NOT NULL
+);
+
+
+-- Create the Skill table
+
+CREATE TABLE Skill
+(SkillID     NUMBER(3)        CONSTRAINT Skill_SkillID_PK           PRIMARY KEY,
+ Description VARCHAR2(30)     CONSTRAINT Skill_Description_NN       NOT NULL
+);
+
+-- Create the Qualification table
+
+CREATE TABLE Qualification
+(QualificationID  NUMBER(3)     CONSTRAINT Qual_QualificationID_PK  PRIMARY KEY,
+ Description      VARCHAR2(30)  CONSTRAINT Qual_Description_NN      NOT NULL,
+ Qual_Level       NUMBER(2)     CONSTRAINT Qual_Level_CC            CHECK 
+                                           (Qual_Level BETWEEN 1 AND 12)  
+                                CONSTRAINT Qual_Level_NN            NOT NULL
+);
+
+-- Create the Vacancy table
+
+CREATE TABLE Vacancy
+(VacancyID   NUMBER(5)     CONSTRAINT Vacancy_VacancyID_PK    PRIMARY KEY,
+ Description VARCHAR2(30)  CONSTRAINT Vacancy_Description_NN  NOT NULL,
+ HourlyRate  NUMBER(6,2)   CONSTRAINT Vacancy_HourlyRate_NN   NOT NULL
+                           CONSTRAINT Vacancy_HourlyRate_CC   CHECK
+                                      (HourlyRate > 0),
+ Status      VARCHAR2(8)   CONSTRAINT Vacancy_Status_CC       CHECK 
+                                      ((Status = 'Unfilled') OR
+                                       (Status = 'Filled'))
+                           CONSTRAINT Vacancy_Status_NN       NOT NULL,
+ Type        VARCHAR2(9)   CONSTRAINT Vacancy_Type_CC  CHECK 
+                                      ((Type = 'Part-time') OR
+                                       (Type = 'Full-time'))
+                           CONSTRAINT Vacancy_Type_NN        NOT NULL,
+ EmployerID  NUMBER(5)     CONSTRAINT Vacancy_EmployerID_FK  
+                                      REFERENCES
+                                      Employer(EmployerID)
+                           CONSTRAINT Vacancy_EmployerID_NN  NOT NULL,
+ CategoryID  NUMBER(3)     CONSTRAINT Vacancy_CategoryrID_FK  
+                                      REFERENCES
+                                      Category(CategoryID)
+                           CONSTRAINT Vacancy_CategoryID_NN  NOT NULL
+);
+
+-- Create the Application table
+
+CREATE TABLE Application
+(CandidateID  NUMBER(5)    CONSTRAINT Application_CandidateID_FK
+                                      REFERENCES
+                                      Candidate(CandidateID),
+ VacancyID    NUMBER(5)    CONSTRAINT Application_VacancyID_FK
+                                      REFERENCES Vacancy(VacancyID),
+                           CONSTRAINT Application_StuID_VacID_PK
+                                      PRIMARY KEY(CandidateID,VacancyID),
+ Status       VARCHAR2(8)  CONSTRAINT Application_Status_CC  CHECK 
+                                      ((Status = 'Pending') OR
+                                       (Status = 'Successfull') OR
+                                       (status = 'Unsuccessful')) 
+                           CONSTRAINT Application_Status_NN  NOT NULL   
+);
+
+-- Create the VacancySkill table
+
+CREATE TABLE VacancySkill
+(VacancyID NUMBER(5)  CONSTRAINT VacancySkill_VacancyID_FK
+                                 REFERENCES Vacancy(VacancyID),
+ SkillID   NUMBER(5)  CONSTRAINT VacancySkill_SkillID_FK
+                                 REFERENCES Skill(SkillID),
+                      CONSTRAINT VacancySkill_VacID_SkillID_PK
+                                 PRIMARY KEY(VacancyID,SkillID),
+ Years     NUMBER(2)  CONSTRAINT VacancySkill_Years_NN NOT NULL
+                      CONSTRAINT VacancySkill_Years_CC CHECK
+                                 (Years BETWEEN 1 AND 10)
+);
+
+-- Create the CandidateSkill table
+
+CREATE TABLE CandidateSkill
+(CandidateID NUMBER(5)  CONSTRAINT CandidateSkill_CandidateID_FK
+                                   REFERENCES Candidate(CandidateID),
+ SkillID     NUMBER(5)  CONSTRAINT CandidateSkill_SkillID_FK
+                                   REFERENCES Skill(SkillID),
+                        CONSTRAINT CandidateSkill_CanID_SkID_PK
+                                   PRIMARY KEY(CandidateID,SkillID),
+ Years     NUMBER(2)    CONSTRAINT CandidateSkill_Years_NN NOT NULL
+                        CONSTRAINT CandidateSkill_Years_CC CHECK
+                                 (Years BETWEEN 1 AND 10)
+);
+
+
+-- Create the VacancyQualification table
+
+CREATE TABLE VacancyQualification
+(VacancyID         NUMBER(5)  CONSTRAINT VacancyQual_VacancyID_FK
+                   REFERENCES Vacancy(VacancyID),
+ QualificationID  NUMBER(3)  CONSTRAINT VacancyQual_QualID_FK
+                   REFERENCES Qualification(QualificationID),
+                   CONSTRAINT Vacancyqual_VacID_QualID_PK
+                   PRIMARY KEY(VacancyID,QualificationID)
+);
+
+-- Create the CandidateQualification table
+
+CREATE TABLE CandidateQualification
+(CandidateID      NUMBER(5)  CONSTRAINT CandidateQual_CandidateID_FK
+                             REFERENCES Candidate(CandidateID),
+ QualificationID  NUMBER(3)  CONSTRAINT CandidateQual_SkillID_FK
+                             REFERENCES Skill(SkillID),
+                             CONSTRAINT CandidateQual_CanID_SkillID_PK
+                             PRIMARY KEY(CandidateID,QualificationID)
+);
+
+
+-- Now add sample data for the Qualification table
+
+INSERT INTO Qualification VALUES (1,  'Bachelor of Computing',      7);
+INSERT INTO Qualification VALUES (2,  'Bachelor of Mathematics',    7);
+INSERT INTO Qualification VALUES (3,  'Bachelor of Physics',        7);
+INSERT INTO Qualification VALUES (4,  'Bachelor of Biology',        7);
+INSERT INTO Qualification VALUES (5,  'Master of Computing',        8);
+INSERT INTO Qualification VALUES (6,  'Master of Remote Sensing',   8);
+INSERT INTO Qualification VALUES (7,  'Master of Physics',          8);
+INSERT INTO Qualification VALUES (8,  'Bachelor of Graphic Design', 7);
+INSERT INTO Qualification VALUES (9,  'Doctor of Mathematics',      10);
+INSERT INTO Qualification VALUES (10, 'Doctor of Physics',          10);
+INSERT INTO Qualification VALUES (11, 'Doctor of Computing',        10);
+INSERT INTO Qualification VALUES (12, 'Bachelor of Art',            7);
+
+
+
+-- Now add sample data for the Skill table
+
+INSERT INTO Skill VALUES (1,  'C Programming');
+INSERT INTO Skill VALUES (2,  'JAVA Programming');
+INSERT INTO Skill VALUES (3,  'C++ Programming');
+INSERT INTO Skill VALUES (4,  'MS Access');
+INSERT INTO Skill VALUES (5,  'MS SQL Server');
+INSERT INTO Skill VALUES (6,  'ORACLE SQL');
+INSERT INTO Skill VALUES (7,  'ORACLE PL/SQL Programming');
+INSERT INTO Skill VALUES (8,  'C# Programming');
+INSERT INTO Skill VALUES (9,  'UML Analysis');
+INSERT INTO Skill VALUES (10, 'JADE Programming');
+INSERT INTO Skill VALUES (11, 'Python Programming');
+INSERT INTO Skill VALUES (12, 'COBOL Programming');
+INSERT INTO Skill VALUES (13, 'Visual Basic Programming');
+INSERT INTO Skill VALUES (14, 'Visual C++ Programming');
+INSERT INTO Skill VALUES (15, 'Oracle Database Training');
+INSERT INTO Skill VALUES (16, 'MS SQL Server Training');
+ 
+-- Now add sample data for the catgeory table
+
+INSERT INTO Category VALUES (1,  'Software Developer');
+INSERT INTO Category VALUES (2,  'IT Support');
+INSERT INTO Category VALUES (3,  'Networks');
+INSERT INTO Category VALUES (4,  'Cybersecurity');
+INSERT INTO Category VALUES (5,  'Cloud Computing');
+INSERT INTO Category VALUES (6,  'Data Adminstration');
+
+
+-- Now add sample data for the Employer table
+
+INSERT INTO Employer VALUES (1,	 'Star Software', '12 Balfour Street',
+                             'Parnell', 'manager@starsoftware.co.nz',
+                             '212 3452');
+
+INSERT INTO Employer VALUES (2,  'Data Logic',            '32 Logan Road',
+                             'Grafton', 'manager@datalogic.co.nz',
+                             '222 5631');
+
+INSERT INTO Employer VALUES (3,	 'Wheeloak Software',      '45 Arney Road',
+                             'Newmarket', 'manager@wheeloak.co.nz',
+                             '214 5467');
+
+INSERT INTO Employer VALUES (4,  'Wadshire Software',     '71 Williamson Avenue',
+                             'St Lukes', 'manager@wadshire.co.nz',
+                             '345 7121');
+
+INSERT INTO Employer VALUES (5,  'Cooke Software',        '82 Bell Road',
+                             'Grafton', 'hr@cookesoftware.co.nz',
+                             '222 5341');
+
+INSERT INTO Employer VALUES (6,  'Data Developers',       '92 Chester Street',
+                            'Parnell',  'hr@datadevelopers.co.nz',
+                            '212 3467');
+
+INSERT INTO Employer VALUES (7,  'Data Solutions',        '68 Crocus Road',
+                             'Newmarket',   'hr@datasolutions.co.nz',
+                             '214 7645');
+
+INSERT INTO Employer VALUES (8,  'Business Data',         '24 Sonia Street',
+                             'St Lukes',   'ceo@businessdata.co.nz',
+                             '345 6512');
+
+INSERT INTO Employer VALUES (9,	 'Real Time Solutions',   '46 Rose Road',
+                             'Grafton',   'hr@rts.co.nz',
+                             '222 5331');
+
+INSERT INTO Employer VALUES (10, 'Data Engineers',        '61 Ingram Street',
+                             'Parnell',  'ceo@dataengineers.co.nz',
+                             '212 3481');
+
+INSERT INTO Employer VALUES (11, 'Solution Engineers',    '51 Seaview Road',
+                             'St Lukes',   'hr@solutionengineers.co.nz',
+                             '345 8121');
+
+INSERT INTO Employer VALUES (12, 'Software Solutions',    '76 Stephens Road',
+                             'Newmarket',   'hr@softwaresolutions.co.nz',
+                             '214 7422');
+
+INSERT INTO Employer VALUES (13, 'Real Time Developers',  '75 Victoria Street',
+                             'Grafton',   'hr@rtdevelopers.co.nz',
+                             '222 5388');
+
+INSERT INTO Employer VALUES (14, 'Data Masters',          '42 Murdoch road',
+                             'Parnell',    'ceo@datamasters.co.nz',
+                             '212 3499');
+
+
+-- Now add sample data for the candidate table
+
+INSERT INTO Candidate VALUES (1,  'Ripley',  'Ellen',	'1 King Street',      'Avondale',   '123 4444', 'Employed');
+INSERT INTO Candidate VALUES (2,  'Smith',   'Sarah',	'20 Ellis Road',      'New Lynn',	'323 5467', 'Employed');
+INSERT INTO Candidate VALUES (3,  'White',   'Jack',	'43 Dixon Road',      'Lynfield',	'423 5651', 'Unemployed');
+INSERT INTO Candidate VALUES (4,  'Howard',  'Hugh',	'102 Hepburn Street', 'Mt Albert',	'322 2344', 'Employed');
+INSERT INTO Candidate VALUES (5,  'Leyton',  'Jim',  	'23 Acorn Place',     'Avondale',	'123 5672', 'Employed');
+INSERT INTO Candidate VALUES (6,  'Black',   'Eric',	'52 Kennedy Drive',   'Mt Albert',	'322 5723', 'Employed');
+INSERT INTO Candidate VALUES (7,  'Green',   'Peter',	'22 Queens Avenue',   'Avondale',	'123 4554', 'Employed');
+INSERT INTO Candidate VALUES (8,  'Jones',   'Jane',	'46 Jade Street',     'St Johns',	'554 5566', 'Unemployed');
+INSERT INTO Candidate VALUES (9,  'James',   'Joan',	'57 Laleham Road',    'Lynfield',	'423 4221', 'Employed');
+INSERT INTO Candidate VALUES (10, 'Harris',  'Peter',	'76 Morris Street',   'Mt Albert',	'322 6218', 'Employed');
+INSERT INTO Candidate VALUES (11, 'Jackson', 'Fred',	'13 Rod Street',      'Avondale',	'123 6542', 'Employed');
+INSERT INTO Candidate VALUES (12, 'Smith',   'Jim', 	'15 King Street',     'Avondale',	'123 6789', 'Employed');
+INSERT INTO Candidate VALUES (13, 'Simmons', 'Joe', 	'44 Acorn Place',     'Avondale',	'123 3431', 'Employed');
+INSERT INTO Candidate VALUES (14, 'Burke',   'James',	'40 Ellis Road',      'New Lynn',	'323 4781', 'Unemployed');
+INSERT INTO Candidate VALUES (16, 'Brown',   'Sam',	    '47 Ellis Road',      'New Lynn',	'323 4451', 'Employed');
+INSERT INTO Candidate VALUES (19, 'Burns',   'Frank',	'56 Jade Street',     'St Johns',	'554 4545', 'Employed');
+INSERT INTO Candidate VALUES (20, 'Simons',  'John',	'45 Acorn Drive',     'St Johns',	'554 6781', 'Employed');
+INSERT INTO Candidate VALUES (21, 'James',   'Sarah', 	'59 Dixon Street',    'Lynfield',	'423 5111', 'Employed');
+
+-- Now add sample data for the certification table
+
+INSERT INTO Certification VALUES (1,  TO_DATE('19/01/2017', 'DD/MM/YYYY'), 'Programming');
+INSERT INTO Certification VALUES (2,  TO_DATE('25/01/2018', 'DD/MM/YYYY'), 'Programming');
+INSERT INTO Certification VALUES (3,  TO_DATE('21/02/2017', 'DD/MM/YYYY'), 'Databases');
+INSERT INTO Certification VALUES (4,  TO_DATE('13/03/2018', 'DD/MM/YYYY'), 'Programming');
+INSERT INTO Certification VALUES (5,  TO_DATE('15/01/2017', 'DD/MM/YYYY'), 'Programming');
+INSERT INTO Certification VALUES (6,  TO_DATE('14/04/2018', 'DD/MM/YYYY'), 'Programming');
+INSERT INTO Certification VALUES (7,  TO_DATE('10/01/2017', 'DD/MM/YYYY'), 'Programming');
+INSERT INTO Certification VALUES (8,  TO_DATE('11/02/2018', 'DD/MM/YYYY'), 'Programming');
+INSERT INTO Certification VALUES (9,  TO_DATE('17/05/2017', 'DD/MM/YYYY'), 'Programming');
+
+
+-- Now add sample data for the vacancy table
+
+INSERT INTO Vacancy VALUES (1,  'Software Developer',          40.00,	'Unfilled',  'Full-time', 1,  1);
+INSERT INTO Vacancy VALUES (2,  'Software Engineer',           45.00,	'Unfilled',  'Full-time', 6,  1);
+INSERT INTO Vacancy VALUES (3,  'Junior Programmer',           30.00,	'Filled',    'Part-time', 2,  1);
+INSERT INTO Vacancy VALUES (4,  'Senior Programmer',           45.00,	'Unfilled',  'Full-time', 10, 1);
+INSERT INTO Vacancy VALUES (5,  'Analyst Programmer',          40.00,	'Unfilled',  'Full-time', 6,  1);
+INSERT INTO Vacancy VALUES (6,	'Software Engineer',           40.00,	'Filled',    'Full-time', 12, 1);
+INSERT INTO Vacancy VALUES (7,	'Senior Software Engineer',    50.00,	'Unfilled',  'Full-time', 14, 1);
+INSERT INTO Vacancy VALUES (8,	'Junior Programmer',           35.00,	'Filled',    'Full-time', 7,  1);
+INSERT INTO Vacancy VALUES (9,	'Programmer',                  45.00,	'Unfilled',  'Full-time', 10, 1);
+INSERT INTO Vacancy VALUES (10,	'Software Developer',          40.00,	'Unfilled',  'Full-time', 3,  1);
+INSERT INTO Vacancy VALUES (11, 'Database Developer',          40.00,	'Unfilled',  'Full-time', 14, 1);
+INSERT INTO Vacancy VALUES (12,	'Database Analyst/Trainer',    60.00,	'Unfilled',  'Full-time', 10, 1);
+INSERT INTO Vacancy VALUES (13,	'Junior Programmer',           30.00,	'Unfilled',  'Full-time', 1,  1);
+INSERT INTO Vacancy VALUES (14,	'Embedded Systems Engineer',   50.00,	'Unfilled',  'Full-time', 14, 1);
+INSERT INTO Vacancy VALUES (15,	'Control Systems Programmer',  45.00,	'Unfilled',  'Full-time', 12, 1);
+INSERT INTO Vacancy VALUES (16, 'Database Analyst Programmer', 50.00,   'Unfilled',  'Full-time', 1,  1);
+
+-- Now add sample data for the vacancy skill table
+
+INSERT INTO VacancySkill VALUES (2,	1,	6);
+INSERT INTO VacancySkill VALUES (5,	3,	4);
+INSERT INTO VacancySkill VALUES (5,	9,	3);
+INSERT INTO VacancySkill VALUES (8,	2,	1);
+INSERT INTO VacancySkill VALUES (9,	6,	2);
+INSERT INTO VacancySkill VALUES (9,	8,	3);
+INSERT INTO VacancySkill VALUES (13,	8,	1);
+INSERT INTO VacancySkill VALUES (16,	4,	1);
+INSERT INTO VacancySkill VALUES (16,	6,	2);
+INSERT INTO VacancySkill VALUES (16,	7,	3);
+
+-- Now add sample data for the candidate skill table
+
+INSERT INTO CandidateSkill VALUES (1,	3,	4);
+INSERT INTO CandidateSkill VALUES (2,	1,	2);
+INSERT INTO CandidateSkill VALUES (2,	4,	3);
+INSERT INTO CandidateSkill VALUES (2,	10,	2);
+INSERT INTO CandidateSkill VALUES (4,	12,	10);
+INSERT INTO CandidateSkill VALUES (5,	8,	1);
+INSERT INTO CandidateSkill VALUES (6,	1,	2);
+INSERT INTO CandidateSkill VALUES (6,	8,	2);
+INSERT INTO CandidateSkill VALUES (8,	8,	2);
+INSERT INTO CandidateSkill VALUES (19,	4,	1);
+INSERT INTO CandidateSkill VALUES (19,	6,	2);
+INSERT INTO CandidateSkill VALUES (19,	7,	3);
+INSERT INTO CandidateSkill VALUES (19,	8,	1);
+INSERT INTO CandidateSkill VALUES (20,	4,	1);
+INSERT INTO CandidateSkill VALUES (20,	6,	2);
+INSERT INTO CandidateSkill VALUES (20,	8,	3);
+INSERT INTO CandidateSkill VALUES (21,	4,	3);
+INSERT INTO CandidateSkill VALUES (21,	6,	2);
+INSERT INTO CandidateSkill VALUES (21,	7,	1);
+
+-- Now add sample data for the vacancy qualifiaction table
+
+INSERT INTO VacancyQualification VALUES (2,	1);
+INSERT INTO VacancyQualification VALUES (3,	1);
+INSERT INTO VacancyQualification VALUES (5,	4);
+
+-- Now add sample data for the candidate qualifiaction table
+
+INSERT INTO CandidateQualification VALUES (1,	1);
+INSERT INTO CandidateQualification VALUES (2,	1);
+INSERT INTO CandidateQualification VALUES (3,	4);
+INSERT INTO CandidateQualification VALUES (4,	4);
+INSERT INTO CandidateQualification VALUES (4,	5);
+
+-- Now add sample data for the application table
+
+INSERT INTO Application VALUES (13,	5, 'Pending');
+INSERT INTO Application VALUES (13,	8, 'Pending');
+
+
+COMMIT;
+                     

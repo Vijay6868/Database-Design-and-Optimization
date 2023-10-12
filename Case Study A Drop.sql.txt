@@ -1,0 +1,14 @@
+-- Script to delete (drop) the ten Looking Glass Recruitment tables
+
+DROP TABLE CandidateSkill;
+DROP TABLE VacancySkill;
+DROP TABLE CandidateQualification;
+DROP TABLE VacancyQualification;
+DROP TABLE Application;
+DROP TABLE Vacancy;
+DROP TABLE Skill;
+DROP TABLE Certification;
+DROP TABLE Candidate;
+DROP TABLE Employer;
+DROP TABLE Qualification;
+DROP TABLE Category;

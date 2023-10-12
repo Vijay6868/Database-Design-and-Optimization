@@ -1,0 +1,202 @@
+-- Query to show all fields in the employer table
+
+SELECT * FROM Employer ORDER BY EmployerID;
+
+
+-- Query to show all fields in the vacancy table
+
+SELECT * FROM Vacancy ORDER BY VacancyID;
+
+
+-- Query to link the employer and vacancy tables (foreign key not included)
+
+SELECT   Employer.EmployerID         As Employer_ID,
+         Employer.EmployerName       As Employer_Name,
+         Employer.StreetAddress      As Employer_StreetAddress,
+         Employer.Suburb             As Employer_Suburb,
+         Employer.EmailAddress       As Employer_Email_Address,
+         Employer.PhoneNumber        As Employer_PhoneNumber,
+         Vacancy.VacancyID           As Vacancy_ID,
+         Vacancy.Description         As Vacancy_Description,
+         Vacancy.HourlyRate          As HourlyRate,
+         Vacancy.Status              As Vacancy_Status,
+         Vacancy.Type                As Vacancy_Type
+FROM     Employer, Vacancy
+WHERE    Employer.EmployerID = Vacancy.EmployerID
+ORDER BY Employer.EmployerID;
+
+
+-- Query to show all fields in the category table
+
+SELECT * FROM Category ORDER BY CategoryID;
+
+
+-- Query to link the category and vacancy tables (foreign key not included)
+
+SELECT   Category.CategoryID         As Category_ID,
+         Category.CategoryName       As Category_Name,
+         Vacancy.VacancyID           As Vacancy_ID,
+         Vacancy.Description         As Vacancy_Description,
+         Vacancy.HourlyRate          As HourlyRate,
+         Vacancy.Status              As Vacancy_Status,
+         Vacancy.Type                As Vacancy_Type
+FROM     Category, Vacancy
+WHERE    Category.CategoryID = Vacancy.CategoryID
+ORDER BY Category.CategoryID;
+
+
+-- Query to show all fields in the vacancy skill table
+
+SELECT * FROM VacancySkill ORDER BY VacancyID, SkillID;
+
+
+-- Query to show all fields in the skill table
+
+SELECT * FROM Skill ORDER BY SkillID;
+
+
+-- Query to link the vacancy, skill vacancancy and skill tables (foreign keys not included)
+
+SELECT   Vacancy.VacancyID           As Vacancy_ID,
+         Vacancy.Description         As Vacancy_Description,
+         Vacancy.HourlyRate          As HourlyRate,
+         Vacancy.Status              As Vacancy_Status,
+         Vacancy.Type                As Vacancy_Type,
+         VacancySkill.Years          AS Vacancy_Skill_Years,
+         Skill.SkillID               AS Skill_ID,
+         Skill.Description           AS Skill_Description
+FROM     Vacancy, VacancySkill, Skill
+WHERE    Vacancy.VacancyID = VacancySkill.VacancyID
+  AND    VacancySkill.SkillID = Skill.SkillID
+ORDER BY Vacancy.VacancyID, VacancySkill.SkillID;
+
+-- Query to show all fields in the vacancy qualification table
+
+SELECT * FROM VacancyQualification ORDER BY VacancyID, QualificationID;
+
+
+-- Query to show all fields in the qualification table
+
+SELECT * FROM Qualification ORDER BY QualificationID;
+
+
+-- Query to link the vacancy, qualification vacancancy and qualification tables (foreign keys not included)
+
+SELECT   Vacancy.VacancyID              As Vacancy_ID,
+         Vacancy.Description            As Vacancy_Description,
+         Vacancy.HourlyRate             As HourlyRate,
+         Vacancy.Status                 As Vacancy_Status,
+         Vacancy.Type                   As Vacancy_Type,
+         Qualification.QualificationID  AS Qualification_ID,
+         Qualification.Description      AS Qualification_Description,
+         Qualification.Qual_Level       AS Qualification_Level
+FROM     Vacancy, VacancyQualification, Qualification
+WHERE    Vacancy.VacancyID                    = VacancyQualification.VacancyID
+  AND    VacancyQualification.QualificationID = Qualification.QualificationID
+ORDER BY Vacancy.VacancyID, VacancyQualification.QualificationID;
+
+
+-- Query to show all fields in the candidate table
+
+SELECT * FROM Candidate ORDER BY CandidateID;
+
+
+-- Query to show all fields in the candidate qualification table
+
+SELECT * FROM CandidateQualification ORDER BY CandidateID, QualificationID;
+
+
+-- Query to link the candidate, candidate skill and skill tables (foreign keys not included)
+
+SELECT   Candidate.CandidateID                  AS Candidate_ID,
+         Candidate.LastName                     AS Candidate_Last_Name,
+         Candidate.FirstName                    AS Candidate_First_Name,
+         Candidate.StreetAddress                AS Candidate_Street_Address,
+         Candidate.Suburb                       AS Candidate_Suburb,
+         Candidate.PhoneNumber                  AS Candidate_Phone_Number,
+         Candidate.Status                       AS Candidate_Status,
+         CandidateSkill.Years                   AS Candidate_Skill_Years,
+         Skill.SkillID                          AS Skill_ID,
+         Skill.Description                      AS Skill_Description
+FROM     Candidate, CandidateSkill, Skill
+WHERE    Candidate.CandidateID  = CandidateSkill.CandidateID
+  AND    CandidateSkill.SkillID = Skill.SkillID
+ORDER BY Candidate.CandidateID, CandidateSkill.SkillID;
+
+
+-- Query to show all fields in the certification table
+
+SELECT * FROM Certification ORDER BY CandidateID;
+
+
+-- Query to link the candidate and certification tables
+
+SELECT   Candidate.CandidateID                  AS Candidate_ID,
+         Candidate.LastName                     AS Candidate_Last_Name,
+         Candidate.FirstName                    AS Candidate_First_Name,
+         Candidate.StreetAddress                AS Candidate_Street_Address,
+         Candidate.Suburb                       AS Candidate_Suburb,
+         Candidate.PhoneNumber                  AS Candidate_Phone_Number,
+         Candidate.Status                       AS Candidate_Status,
+         Certification.CertificationDate        AS Certification_Date,
+         Certification.Notes                    AS Certification_Notes
+FROM     Candidate
+LEFT     OUTER JOIN Certification
+  ON     Candidate.CandidateID = Certification.CandidateID
+ORDER BY LastName, FirstName;
+
+
+-- Query to show all fields in the candidate skill table
+
+SELECT * FROM CandidateSkill ORDER BY CandidateID, SkillID;
+
+
+-- Query to link the candidate, candidate qualification and qualification tables (foreign keys not included)
+
+SELECT   Candidate.CandidateID                  AS Candidate_ID,
+         Candidate.LastName                     AS Candidate_Last_Name,
+         Candidate.FirstName                    AS Candidate_First_Name,
+         Candidate.StreetAddress                AS Candidate_Street_Address,
+         Candidate.Suburb                       AS Candidate_Suburb,
+         Candidate.PhoneNumber                  AS Candidate_Phone_Number,
+         Candidate.Status                       AS Candidate_Status,
+         Qualification.QualificationID          AS Qualification_ID,
+         Qualification.Description              AS Qualification_Description,
+         Qualification.Qual_Level               AS Qualification_Level
+FROM     Candidate, CandidateQualification, Qualification
+WHERE    Candidate.CandidateID                  = CandidateQualification.CandidateID
+  AND    CandidateQualification.QualificationID = Qualification.QualificationID
+ORDER BY Candidate.CandidateID, CandidateQualification.QualificationID;
+
+-- Query to show all fields in the application table
+
+SELECT * FROM Application ORDER BY CandidateID, VacancyID;
+
+
+-- Query to link the candidate and application tables (foreign keys not included)
+
+SELECT   Candidate.CandidateID                  AS Candidate_ID,
+         Candidate.LastName                     AS Candidate_Last_Name,
+         Candidate.FirstName                    AS Candidate_First_Name,
+         Candidate.StreetAddress                AS Candidate_Street_Address,
+         Candidate.Suburb                       AS Candidate_Suburb,
+         Candidate.PhoneNumber                  AS Candidate_Phone_Number,
+         Candidate.Status                       AS Candidate_Status,
+         Application.VacancyID                  AS Application_Vacancy_ID,
+         Application.Status                     AS Application_Status
+FROM     Candidate, Application
+WHERE    Candidate.CandidateID = Application.CandidateID
+ORDER BY Candidate.CandidateID, Application.VacancyID;
+
+-- Query to link the vacancy and application tables (foreign keys not included)
+
+SELECT   Vacancy.VacancyID              As Vacancy_ID,
+         Vacancy.Description            As Vacancy_Description,
+         Vacancy.HourlyRate             As HourlyRate,
+         Vacancy.Status                 As Vacancy_Status,
+         Vacancy.Type                   As Vacancy_Type,
+         Application.CandidateID        AS Application_Candidate_ID,
+         Application.Status             AS Applicstion_Status
+FROM     Vacancy, Application
+WHERE    Vacancy.VacancyID = Application.VacancyID
+ORDER BY Vacancy.VacancyID, Application.CandidateID;
