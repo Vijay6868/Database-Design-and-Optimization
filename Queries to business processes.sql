@@ -272,11 +272,39 @@ WHERE V.STATUS = 'Unfilled'
 --10.	Vacancies by Category.
 
 --For each vacancy list the vacancy id, description, hourly rate, and category name. Sort by category name.
-
+SELECT 
+    V.VACANCYID,
+    V.DESCRIPTION,
+    V.HOURLYRATE,
+    C.CATEGORYNAME
+FROM VACANCY V
+INNER JOIN CATEGORY C ON C.CATEGORYID = V.CATEGORYID
+ORDER BY C.CATEGORYNAME
 --11.	Vacancies by Employer.
 
+
 --For each vacancy list the vacancy id, type, status, and employer name. Sort by employer name.
+SELECT 
+    V.VACANCYID,
+    V.TYPE,
+    V.STATUS,
+    E.EMPLOYERNAME
+FROM VACANCY V
+INNER JOIN EMPLOYER E ON V.EMPLOYERID = E.EMPLOYERID
+ORDER BY EMPLOYERNAME
 
 --12.	All Candidates.
 
 --For each candidate list the candidate id, last name, first name, street address, suburb, phone number, status, and certification date (if applicable). Sort by first name within last name.
+SELECT
+    C.CANDIDATEID,
+    C.LASTNAME,
+    C.FIRSTNAME,
+    C.STREETADDRESS,
+    C.SUBURB,
+    C.PHONENUMBER,
+    C.STATUS,
+    CD.CERTIFICATIONDATE
+FROM CANDIDATE C
+LEFT JOIN CERTIFICATION CD ON C.CANDIDATEID = CD.CANDIDATEID
+ORDER BY C.LASTNAME, C.FIRSTNAME
