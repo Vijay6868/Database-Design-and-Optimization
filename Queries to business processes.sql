@@ -4,8 +4,8 @@
 SELECT * FROM CANDIDATE 
 ORDER BY LASTNAME, FIRSTNAME; 
 /* •	List certification details (notes and certification date) for a selected candidate. */
-SELECT * FROM CERTIFICATION
-WHERE CANDIDATEID =3;
+SELECT NOTES, CERTIFICATIONDATE FROM CERTIFICATION
+WHERE CANDIDATEID =2;
 /* 
 2.	Enter, modify or delete vacancies. */
 
@@ -14,8 +14,8 @@ SELECT
     V.VacancyID,
     V.Description,
     V.Type,
-    V.HourlyRate,
     V.Status,
+    V.HourlyRate,
     E.EMPLOYERNAME,
     C.CATEGORYNAME 
 FROM 
@@ -44,21 +44,34 @@ ORDER BY DESCRIPTION;
 --List skills (skill id, description, and years) by description for a selected candidate.
 SELECT CS.SKILLID, S.DESCRIPTION, CS.YEARS FROM CANDIDATESKILL CS
 INNER JOIN SKILL S ON CS.SKILLID=S.SKILLID
-WHERE CANDIDATEID = 1 
+WHERE CANDIDATEID = 2 
 ORDER BY DESCRIPTION;
 --List qualifications (qualification id, level and description) by description.
 SELECT * FROM qualification
 ORDER BY DESCRIPTION;
 --List qualifications (qualification id, level and description) by description for a selected candidate.
-SELECT CQ.QUALIFCATIONID, Q.LEVEL, Q.DESCRIPTION FROM CANDIDATEQUALIFICATION
-INNER JOIN QUALFI
+SELECT CQ.QUALIFICATIONID, Q.QUAL_LEVEL, Q.DESCRIPTION FROM CANDIDATEQUALIFICATION CQ
+INNER JOIN QUALIFICATION Q ON Q.QUALIFICATIONID = CQ.QUALIFICATIONID
+WHERE CQ.CANDIDATEID = 4;
 --4.	Add or remove skills or qualifications to or from a candidate.
 
-•	List vacancy details (vacancy ID, description, and employer name) for unfilled vacancies only by description.
-•	List skills (skill id and description) by description.
-•	List skills (skill id, description, and years) by description for a selected vacancy.
-•	List qualifications (qualification id, level and description) by description.
-•	List qualifications (qualification id, level and description) by description for a selected vacancy.
+--List vacancy details (vacancy ID, description, and employer name) for unfilled vacancies only by description.
+SELECT
+    V.VACANCYID,
+    V.DESCRIPTION,
+    E.EMPLOYERNAME
+FROM
+    VACANCY V
+INNER JOIN EMPLOYER E ON E.EMPLOYERID = V.EMPLOYERID
+WHERE STATUS = 'Unfilled'
+ORDER BY DESCRIPTION;
+--List skills (skill id and description) by description.
+SELECT * FROM SKILL
+ORDER BY DESCRIPTION;
+--List skills (skill id, description, and years) by description for a selected vacancy.
+
+--List qualifications (qualification id, level and description) by description.
+--List qualifications (qualification id, level and description) by description for a selected vacancy.
 
 5.	Apply a candidate to a vacancy.
 
