@@ -247,6 +247,8 @@ INNER JOIN EMPLOYER E ON E.EMPLOYERID = V.EMPLOYERID
 INNER JOIN CATEGORY C ON C.CATEGORYID = V.CATEGORYID
 WHERE V.STATUS = 'Unfilled'
 --9.	All unfilled vacancies with candidates interested.
+
+--For each unfilled vacancy list the vacancy id, description, type, status, employer name, descriptions and years of skills, descriptions of qualifications and full names of the candidates.
 SELECT
     V.VACANCYID,
     V.DESCRIPTION,
@@ -267,8 +269,6 @@ INNER JOIN EMPLOYER E ON V.EMPLOYERID = E.EMPLOYERID
 INNER JOIN APPLICATION A ON A.VACANCYID = V.VACANCYID
 INNER JOIN CANDIDATE C ON A.CANDIDATEID = C.CANDIDATEID
 WHERE V.STATUS = 'Unfilled'
---For each unfilled vacancy list the vacancy id, description, type, status, employer name, descriptions and years of skills, descriptions of qualifications and full names of the candidates.
-
 --10.	Vacancies by Category.
 
 --For each vacancy list the vacancy id, description, hourly rate, and category name. Sort by category name.
