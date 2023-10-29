@@ -6,6 +6,7 @@ ORDER BY LASTNAME, FIRSTNAME;
 /* •	List certification details (notes and certification date) for a selected candidate. */
 SELECT NOTES, CERTIFICATIONDATE FROM CERTIFICATION
 WHERE CANDIDATEID =2;
+
 /* 
 2.	Enter, modify or delete vacancies. */
 
