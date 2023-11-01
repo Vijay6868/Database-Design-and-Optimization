@@ -169,7 +169,8 @@ ORDER BY DESCRIPTION;
 --List applications (status, candidate’s last name and first name) for a selected vacancy by candidate’s last name
 SELECT
     C.LASTNAME,
-    C.FIRSTNAME
+    C.FIRSTNAME,
+    A.STATUS
 FROM CANDIDATE C
 INNER JOIN APPLICATION A ON C.CANDIDATEID = A.CANDIDATEID
 WHERE A.VACANCYID = 8
